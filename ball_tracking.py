@@ -20,8 +20,8 @@ args = vars(ap.parse_args())
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-greenLower = (29, 86, 6)
-greenUpper = (64, 255, 255)
+greenLower = (15,131,190)
+greenUpper = (0, 255, 255)
 pts = deque(maxlen=args["buffer"])
 
 # if a video path was not supplied, grab the reference
@@ -110,42 +110,14 @@ while True:
 		thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
 		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
-	# show the frame to our screen
-	cv2.imshow("Frame", frame)
-	key = cv2.waitKey(1) & 0xFF
+#plot the trajectory of datapoint 
+plt.plot(Data_Points['x'], Data_Points['y'])
 
-	# if the 'q' key is pressed, stop the loop
-	if key == ord("q"):
-		break
-
-#'h' is the focal length of the camera
-#'X0' is the correction term of shifting of x-axis
-#'Y0' is the correction term ofshifting of y-axis
-#'time0' is the correction term for correction of starting of time
-h = 0.2
-X0 = -3
-Y0 = 20
-time0 = 0
-theta0 = 0.3
-
-#Applying the correction terms to obtain actual experimental data
-Data_Points['x'] = Data_Points['x']- X0
-Data_Points['y'] = Data_Points['y'] - Y0
-Data_Points['time'] = Data_Points['time'] - time0
-
-#Calulataion of theta value
-Data_Points['theta'] = 2 * np.arctan(Data_Points['y']*0.0000762/h)#the factor correspons to pixel length in real life
-Data_Points['theta'] = Data_Points['theta'] - theta0
-
-#Creating the 'Theta' vs 'Time' plot
-plt.plot(Data_Points['theta'], Data_Points['time'])
-plt.xlabel('Theta')
-plt.ylabel('Time')
 
 #Export The Data Points As cvs File and plot
 Data_Points.to_csv('Data_Set.csv', sep=",")
-plt.savefig('Time_vs_Theta_Graph.svg', transparent= True)
+plt.savefig('Time_vs_Theta_Graph.png', transparent= True)
 
 # cleanup the camera and close any open windows
 camera.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
